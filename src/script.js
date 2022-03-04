@@ -174,6 +174,23 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Animate
  */
 
+//onScroll cambio de luces
+let lastScrollTop = 0;
+window.addEventListener("scroll", function(){
+   let st = window.pageYOffset || document.documentElement.scrollTop; 
+   if (st > lastScrollTop){
+        pointLight2.position.x += + 0.1
+        pointLight2.position.y += - 0.1
+        pointLight2.position.z += - 0.1
+        pointLight2.intensity += + 0.005
+   } else {
+        pointLight2.position.x += - 0.1
+        pointLight2.position.y += + 0.1
+        pointLight2.position.z += + 0.1
+        pointLight2.intensity += - 0.005   }
+   lastScrollTop = st;
+}, false);
+
 window.onmousewheel = (e) => {
     if (sphere) {
         // rotación en scroll
@@ -181,9 +198,6 @@ window.onmousewheel = (e) => {
         sphere.rotation.y += e.deltaY / 400;
         sphere.rotation.z += e.deltaY / 400;
     }
-    // if (pointLight2) {
-    //     pointLight2.position.set(-2.11,2.37,-3)
-    // }
 };
 
 document.addEventListener('mousemove', onDocumentMouseMove)
