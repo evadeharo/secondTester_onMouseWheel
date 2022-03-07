@@ -4,8 +4,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 
 //Loading
-const textureLoader = new THREE.TextureLoader()
-const normalTexture = textureLoader.load('/textures/NormalMap.png')
+// const textureLoader = new THREE.TextureLoader()
+// const normalTexture = textureLoader.load('/textures/NormalMap.jpg')
 
 // Debug
 const gui = new dat.GUI()
@@ -17,20 +17,25 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 // Objects
-const geometry = new THREE.SphereGeometry( .5, 64, 64);
+const geometry = new THREE.TorusKnotGeometry(0.25, 0.03, 300, 20, 8, 1);
 
 // Materials
 const material = new THREE.MeshStandardMaterial()
 material.roughness = 0.336
 material.metalness = 0.496
-material.normalMap = normalTexture
-material.color = new THREE.Color(0xffffff)
+// material.normalMap = normalTexture
+material.color = new THREE.Color(0xFFA5A5)
 
 // Mesh
-const sphere = new THREE.Mesh(geometry,material)
-scene.add(sphere)
+const thorus = new THREE.Mesh(geometry,material)
+scene.add(thorus)
 
 // LUCES =>
+
+// Amnnient 
+const ambientLight = new THREE.AmbientLight( 0x404040, 0.5 );
+scene.add( ambientLight );
+
 // Light 1
 const pointLight = new THREE.PointLight(0x77ff, 1)
 pointLight.position.x = -0.92
@@ -174,6 +179,21 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Animate
  */
 
+ document.addEventListener('mousemove', onDocumentMouseMove)
+ let mouseX = 0;
+ let mouseY = 0;
+ 
+ let targetX = 0;
+ let targetY = 0;
+ 
+ const windowX = window.innerWidth / 2;
+ const windowY = window.innerHeight / 2;
+ 
+ function onDocumentMouseMove(event) {
+    mouseX = (event.clientX - windowX)
+    mouseY = (event.clientY - windowY)
+ }
+ 
 //onScroll cambio de luces
 let lastScrollTop = 0;
 window.addEventListener("scroll", function(){
@@ -191,30 +211,23 @@ window.addEventListener("scroll", function(){
    lastScrollTop = st;
 }, false);
 
+//onScroll rotación del objeto
 window.onmousewheel = (e) => {
-    if (sphere) {
-        // rotación en scroll
-        sphere.rotation.x += e.deltaY / 400;
-        sphere.rotation.y += e.deltaY / 400;
-        sphere.rotation.z += e.deltaY / 400;
+    if (thorus) {
+        thorus.rotation.x = (e.clientX - windowX) * 2
+        thorus.rotation.y = (e.clientY - windowY) * 2
+        thorus.rotation.z = (e.clientY - windowX) * 2
+        console.log( thorus.rotation.x, thorus.rotation.y, thorus.rotation.z );
     }
 };
 
-document.addEventListener('mousemove', onDocumentMouseMove)
+//onScroll cambio de forma
+// window.onmousewheel = (e) => {
+//     if (thorus) {
+//         geometry.moveTo(0.25, 0.03, 300, 20, 8, 1);
 
-let mouseX = 0;
-let mouseY = 0;
-
-let targetX = 0;
-let targetY = 0;
-
-const windowX = window.innerWidth / 2;
-const windowY = window.innerHeight / 2;
-
-function onDocumentMouseMove(event) {
-    mouseX = (event.clientX - windowX)
-    mouseY = (event.clientY - windowY)
-}
+//     }
+// };
 
 const clock = new THREE.Clock()
 
@@ -226,10 +239,10 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
-    sphere.rotation.y = .5 * elapsedTime
+    thorus.rotation.y = .8 * elapsedTime
 
-    sphere.rotation.y += .5 * (targetX - sphere.rotation.y)
-    sphere.rotation.x += .5 * (targetY - sphere.rotation.x)
+    thorus.rotation.y += .5 * (targetX - thorus.rotation.y)
+    thorus.rotation.x += .5 * (targetY - thorus.rotation.x)
 
     // Update Orbital Controls
     // controls.update()
